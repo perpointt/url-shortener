@@ -16,6 +16,8 @@ type HTPPServer struct {
 	Address     string `yaml:"address" env-default:"localhost:8080"`
 	Timeout     int64  `yaml:"timeout" env-default:"4000"`
 	IdleTimeout int64  `yaml:"idle_timeout" env-default:"6000"`
+	User        string `yaml:"user" env-required:"true"`
+	Password    string `yaml:"password" env-required:"true" env:"HTTP_SERVER_PASSWORD"`
 }
 
 func MustLoad() *Config {
