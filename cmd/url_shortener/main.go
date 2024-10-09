@@ -10,7 +10,7 @@ import (
 	"url-shortener/internal/config"
 	"url-shortener/internal/http-server/handlers/url/save"
 	mwLogger "url-shortener/internal/http-server/middleware/logger"
-	slogpretty "url-shortener/internal/lib/logger/handlers"
+	"url-shortener/internal/lib/logger/handlers/slogpretty"
 	"url-shortener/internal/storage/sqlite"
 )
 

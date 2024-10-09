@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	resp "url-shortener/internal/lib/api/response"
+	"url-shortener/internal/lib/logger/sl"
 	"url-shortener/internal/lib/random"
 	"url-shortener/internal/storage"
 )
@@ -24,6 +25,7 @@ type Response struct {
 
 const aliasLength = 6
 
+//go:generate mockery --name URLSaver
 type URLSaver interface {
 	SaveURL(urlSaver string, alias string) (int64, error)
 }
@@ -40,7 +42,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("failed to decode request body: ", err)
+			log.Error("failed to decode request body: ", sl.Err(err))
 			render.JSON(w, r, resp.Error("failed to decode request"))
 			return
 		}
@@ -50,7 +52,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		if err := validator.New().Struct(req); err != nil {
 			validateErr := err.(validator.ValidationErrors)
 
-			log.Error("invalid request", err)
+			log.Error("invalid request", sl.Err(err))
 
 			render.JSON(w, r, resp.ValidationError(validateErr))
 
@@ -73,7 +75,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		}
 
 		if err != nil {
-			log.Error("failed to add url", err)
+			log.Error("failed to add url", sl.Err(err))
 
 			render.JSON(w, r, resp.Error("failed to add url"))
 
