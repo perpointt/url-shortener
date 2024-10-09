@@ -40,7 +40,6 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
-	router.Use(middleware.Logger)
 	router.Use(mwLogger.New(log))
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
@@ -59,10 +58,11 @@ func main() {
 	log.Info("starting server", slog.String("address", cfg.Address))
 
 	srv := &http.Server{
-		Addr:        cfg.Address,
-		Handler:     router,
-		ReadTimeout: time.Duration(cfg.HTPPServer.Timeout),
-		IdleTimeout: time.Duration(cfg.HTPPServer.IdleTimeout),
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  time.Duration(cfg.HTPPServer.Timeout) * time.Second,
+		WriteTimeout: time.Duration(cfg.HTPPServer.Timeout) * time.Second,
+		IdleTimeout:  time.Duration(cfg.HTPPServer.IdleTimeout) * time.Second,
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
